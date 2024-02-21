@@ -47,6 +47,32 @@ final class ArrayStorage<T> {
         (pointer + index).pointee
     }
     
+    //This function is not yet completed
+    func remove(at index: Int) {
+        if index >= count {
+            fatalError("Array index out of bound exception")
+        }
+        
+        if index == count - 1 {
+            //TODO: Remove element at specific path
+        }
+        
+        var currentIndex = count - 1
+        
+        count -= 1
+    }
+    
+    func removeAll(keepingCapacity: Bool = false) {
+        if keepingCapacity {
+            pointer.deinitialize(count: count)
+        } else {
+            // Assign default capacity
+            capacity = 5
+            pointer = UnsafeMutablePointer<T>.allocate(capacity: capacity)
+            count = 0
+        }
+    }
+    
     private func reallocate(_ pointer: UnsafeMutablePointer<T>) -> UnsafeMutablePointer<T> {
         defer { pointer.deallocate() }
 
@@ -125,6 +151,9 @@ extension UnsafeArray {
 }
 
 do {
+    var du = Array<Int>()
+    du.removeAll(keepingCapacity: true)
+    
     var array = UnsafeArray<Int>()
     array.append(1)
     array.append(2)
