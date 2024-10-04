@@ -5,29 +5,27 @@
 //  Created by Anbalagan on 04/10/24.
 //
 
-struct UnsafeArray<T>: Sequence, ExpressibleByArrayLiteral {
-    private var storage: ArrayStorage<T>
+struct UnsafeArray<Element>: Sequence, ExpressibleByArrayLiteral {
+    private var storage: ArrayStorage<Element>
     private var current = 0
     
     init() {
         storage = .init()
     }
     
-    init(arrayLiteral elements: T...) {
+    init(arrayLiteral elements: Element...) {
         storage = .init()
         
-        elements.forEach {
-            storage.append($0)
-        }
+        elements.forEach { storage.append($0) }
     }
     
     var count: Int { storage.count }
     
-    func append(_ element: T) {
+    func append(_ element: Element) {
         storage.append(element)
     }
     
-    func insert(at index: Int, value: T) {
+    func insert(at index: Int, value: Element) {
         storage.insert(at: index, value: value)
     }
     
@@ -35,39 +33,31 @@ struct UnsafeArray<T>: Sequence, ExpressibleByArrayLiteral {
         storage.remove(at: index)
     }
     
-    private func getElement(at index: Int) -> T {
+    private func getElement(at index: Int) -> Element {
         storage.getElement(at: index)
     }
     
-    func makeIterator() -> some IteratorProtocol {
-        UnsafeArrayIterator(storage)
+    func makeIterator() -> UnsafeArrayIterator<Element> {
+        UnsafeArrayIterator<Element>(storage)
     }
     
-    subscript(index: Int) -> T {
-        get {
-            getElement(at: index)
-        }
-        set(newValue) {
-            storage.replace(at: index, value: newValue)
-        }
+    subscript(index: Int) -> Element {
+        get { getElement(at: index) }
+        set(newValue) { storage.replace(at: index, value: newValue) }
     }
 }
 
-extension UnsafeArray {
-    struct UnsafeArrayIterator<Element>: IteratorProtocol {
-        private weak var storage: ArrayStorage<Element>?
-        private var current = 0
-        
-        init(_ storage: ArrayStorage<Element>? = nil) {
-            self.storage = storage
-        }
-        
-        mutating func next() -> Element? {
-            guard let storage else { return nil }
-            if storage.count == 0 || current >= storage.count { return nil }
-            defer { current += 1 }
-            
-            return storage.getElement(at: current)
-        }
+extension UnsafeArray: Collection {
+    var startIndex: Int { storage.startIndex }
+    
+    var endIndex: Int { storage.endIndex }
+    
+    func index(after i: Int) -> Int { storage.index(after: i) }
+}
+
+//TODO: Incomplete
+extension UnsafeArray: CustomReflectable {
+    var customMirror: Mirror {
+        Mirror(reflecting: storage)
     }
 }
