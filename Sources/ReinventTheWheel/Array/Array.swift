@@ -1,3 +1,10 @@
+//
+//  Array.swift
+//  ReinventTheWheel
+//
+//  Created by Anbalagan on 04/10/24.
+//
+
 final class ArrayStorage<T> {
     private var pointer: UnsafeMutablePointer<T>
     private(set) var capacity = 5
@@ -55,7 +62,6 @@ final class ArrayStorage<T> {
         
         // Remove last element
         if index == count - 1 {
-            print((pointer + index).pointee)
             (pointer + index).pointee
         } else {
             //TODO: Remove element at specific path
@@ -167,32 +173,3 @@ extension UnsafeArray {
         }
     }
 }
-
-do {
-    var du = Array<Int>()
-    du.removeAll(keepingCapacity: true)
-    
-    var array = UnsafeArray<Int>()
-    array.append(1)
-    array.append(2)
-    array.append(3)
-    array.append(4)
-    array.append(5)
-    array.append(6)
-    
-    array.remove(at: array.count - 1)
-    
-    
-//
-//    array[1] = "10"
-//    print(array[1])
-//    array.insert(at: 0, value: "6")
-    
-//    var array: UnsafeArray<String> = ["1", "2", "3", "4", "5"]
-    
-//    for element in array {
-//        print(element)
-//    }
-}
-
-print("End of program")
