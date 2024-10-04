@@ -4,5 +4,6 @@
         <page name='UniqueLinkedList'/>
         <page name='ArrayFundamental'/>
         <page name='DictionaryFundamental'/>
+        <page name='Graph'/>
     </pages>
 </playground>

@@ -53,8 +53,18 @@ final class ArrayStorage<T> {
             fatalError("Array index out of bound exception")
         }
         
+        // Remove last element
         if index == count - 1 {
+            print((pointer + index).pointee)
+            (pointer + index).pointee
+        } else {
             //TODO: Remove element at specific path
+            var oldIndex = index
+            repeat {
+                (pointer + oldIndex).pointee = (pointer + oldIndex + 1).pointee
+                oldIndex += 1
+            } while oldIndex < count - 2
+            (pointer + index).deallocate()
         }
         
         var currentIndex = count - 1
@@ -71,6 +81,10 @@ final class ArrayStorage<T> {
             pointer = UnsafeMutablePointer<T>.allocate(capacity: capacity)
             count = 0
         }
+    }
+    
+    private func arrange() {
+        
     }
     
     private func reallocate(_ pointer: UnsafeMutablePointer<T>) -> UnsafeMutablePointer<T> {
@@ -113,7 +127,11 @@ struct UnsafeArray<T>: Sequence, ExpressibleByArrayLiteral {
         storage.insert(at: index, value: value)
     }
     
-    func getElement(at index: Int) -> T {
+    func remove(at index: Int) {
+        storage.remove(at: index)
+    }
+    
+    private func getElement(at index: Int) -> T {
         storage.getElement(at: index)
     }
     
@@ -161,16 +179,20 @@ do {
     array.append(4)
     array.append(5)
     array.append(6)
-//    
+    
+    array.remove(at: array.count - 1)
+    
+    
+//
 //    array[1] = "10"
 //    print(array[1])
 //    array.insert(at: 0, value: "6")
     
 //    var array: UnsafeArray<String> = ["1", "2", "3", "4", "5"]
     
-    for element in array {
-        print(element)
-    }
+//    for element in array {
+//        print(element)
+//    }
 }
 
 print("End of program")
