@@ -5,12 +5,6 @@
 //  Created by Anbalagan on 04/10/24.
 //
 
-indirect enum Node<Key: Hashable, Value> {
-    case value(key: Key, value: Value, next: Node<Key, Value>)
-    case empty
-}
-
-
 struct UniqueLinkedList<Key: Hashable, Value>: Sequence, IteratorProtocol {
     private var head: Node<Key, Value>?
     
