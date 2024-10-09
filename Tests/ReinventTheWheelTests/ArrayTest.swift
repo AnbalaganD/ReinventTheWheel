@@ -33,3 +33,17 @@ func checkCollectionHasSameElement(rawArray: [Int]) async throws {
     let result = rawArray == array
     print(result)
 }
+
+@Test
+func checkDropLast() {
+    let array = UnsafeArray<Int>(arrayLiteral: 1, 2, 3, 4, 5)
+    let item = array.dropLast()
+    print(item)
+    array.forEach { print($0) }
+}
+
+@Test
+func arrayCount() {
+    let array = UnsafeArray<Int>(arrayLiteral: 1, 2, 3, 4, 5, 6)
+    #expect(array.count == 6)
+}

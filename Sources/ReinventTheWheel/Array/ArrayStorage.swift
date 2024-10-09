@@ -91,7 +91,12 @@ final class ArrayStorage<T> {
     
     var startIndex: Int { 0 }
     
-    var endIndex: Int { count - 1 }
+    var endIndex: Int { count }
+    
+    func index(before i: Int) -> Int {
+        if i >= endIndex { fatalError("After index out of bound exception") }
+        return i - 1
+    }
     
     func index(after i: Int) -> Int {
         if i >= endIndex { fatalError("After index out of bound exception") }

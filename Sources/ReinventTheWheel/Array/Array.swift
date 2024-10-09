@@ -15,11 +15,8 @@ struct UnsafeArray<Element>: Sequence, ExpressibleByArrayLiteral {
     
     init(arrayLiteral elements: Element...) {
         storage = .init()
-        
-        elements.forEach { storage.append($0) }
+        elements.forEach(storage.append)
     }
-    
-    var count: Int { storage.count }
     
     func append(_ element: Element) {
         storage.append(element)
@@ -33,17 +30,8 @@ struct UnsafeArray<Element>: Sequence, ExpressibleByArrayLiteral {
         storage.remove(at: index)
     }
     
-    private func getElement(at index: Int) -> Element {
-        storage.getElement(at: index)
-    }
-    
     func makeIterator() -> UnsafeArrayIterator<Element> {
         UnsafeArrayIterator<Element>(storage)
-    }
-    
-    subscript(index: Int) -> Element {
-        get { getElement(at: index) }
-        set(newValue) { storage.replace(at: index, value: newValue) }
     }
 }
 
@@ -52,7 +40,17 @@ extension UnsafeArray: Collection {
     
     var endIndex: Int { storage.endIndex }
     
+    //TODO: check index is valid before read and write
+    subscript(position: Int) -> Element {
+        get { storage.getElement(at: position) }
+        set(newValue) { storage.replace(at: position, value: newValue) }
+    }
+    
     func index(after i: Int) -> Int { storage.index(after: i) }
+}
+
+extension UnsafeArray: BidirectionalCollection {
+    func index(before i: Int) -> Int { storage.index(before: i) }
 }
 
 //TODO: Incomplete
