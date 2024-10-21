@@ -14,3 +14,9 @@ func == <T: Equatable>(lhs: Array<T>, rhs: UnsafeArray<T>) -> Bool {
 func == <T: Equatable>(lhs: UnsafeArray<T>, rhs: Array<T>) -> Bool {
     return zip(rhs, lhs).allSatisfy { $0 == $1 }
 }
+
+extension UnsafeArray where Element: Equatable {
+    static func == <T: Equatable>(lhs: UnsafeArray<T>, rhs:UnsafeArray<T>) -> Bool {
+        return zip(rhs, lhs).allSatisfy { $0 == $1 }
+    }
+}
