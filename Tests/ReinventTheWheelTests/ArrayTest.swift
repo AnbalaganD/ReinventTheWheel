@@ -93,3 +93,24 @@ func checkValueSemantics() async throws {
     print(firstArray)
     print(secondArray)
 }
+
+@Test
+func checkInsertFirst() async throws {
+    var array: UnsafeArray<Int> = [1, 2, 3, 4, 5]
+    array.insert(at: 0, value: 6)
+    #expect(array == [6, 1, 2, 3, 4, 5])
+}
+
+@Test
+func checkInsertLast() async throws {
+    var array: UnsafeArray<Int> = [1, 2, 3, 4, 5]
+    array.insert(at: array.count, value: 6)
+    #expect(array == [1, 2, 3, 4, 5, 6])
+}
+
+@Test
+func checkInsertMiddle() async throws {
+    var array: UnsafeArray<Int> = [1, 2, 3, 4, 5]
+    array.insert(at: 3, value: 6)
+    #expect(array == [1, 2, 3, 6, 4, 5])
+}

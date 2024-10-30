@@ -23,11 +23,15 @@ struct UnsafeArray<Element>: Sequence, ExpressibleByArrayLiteral {
     }
     
     mutating func insert(at index: Int, value: Element) {
+        precondition(index >= startIndex, "Position must be positive or zero")
+        precondition(index < endIndex + 1, "Index out of bounds")
         makeSureIsUniquelyReferenced()
         storage.insert(at: index, value: value)
     }
     
     mutating func remove(at index: Int) {
+        precondition(index >= startIndex, "Position must be positive or zero")
+        precondition(index < endIndex, "Index out of bounds")
         makeSureIsUniquelyReferenced()
         storage.remove(at: index)
     }
