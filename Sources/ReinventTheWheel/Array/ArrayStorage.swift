@@ -14,6 +14,13 @@ final class ArrayStorage<T> {
         pointer = UnsafeMutablePointer<T>.allocate(capacity: capacity)
     }
     
+    private init(storage: ArrayStorage<T>) {
+        capacity = storage.capacity
+        count = storage.count
+        pointer = UnsafeMutablePointer<T>.allocate(capacity: storage.capacity)
+        pointer.initialize(from: storage.pointer, count: storage.count)
+    }
+    
     func append(_ element: T) {
         if count == capacity {
             pointer = reallocate(pointer)
@@ -120,5 +127,11 @@ final class ArrayStorage<T> {
 extension ArrayStorage {
     func withUnsafeBufferPointer(_ body: (UnsafeBufferPointer<T>) throws -> Void) rethrows {
         try body(UnsafeBufferPointer(start: pointer, count: capacity))
+    }
+}
+
+extension ArrayStorage {
+    func makeUniqueCopy() -> ArrayStorage<T> {
+        ArrayStorage<T>(storage: self)
     }
 }

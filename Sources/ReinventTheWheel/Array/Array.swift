@@ -17,24 +17,34 @@ struct UnsafeArray<Element>: Sequence, ExpressibleByArrayLiteral {
         elements.forEach(storage.append)
     }
     
-    func append(_ element: Element) {
+    mutating func append(_ element: Element) {
+        makeSureIsUniquelyReferenced()
         storage.append(element)
     }
     
-    func insert(at index: Int, value: Element) {
+    mutating func insert(at index: Int, value: Element) {
+        makeSureIsUniquelyReferenced()
         storage.insert(at: index, value: value)
     }
     
-    func remove(at index: Int) {
+    mutating func remove(at index: Int) {
+        makeSureIsUniquelyReferenced()
         storage.remove(at: index)
     }
     
-    func removeAll(keepingCapacity: Bool = false) {
+    mutating func removeAll(keepingCapacity: Bool = false) {
+        makeSureIsUniquelyReferenced()
         storage.removeAll(keepingCapacity: keepingCapacity)
     }
     
     func makeIterator() -> UnsafeArrayIterator<Element> {
         UnsafeArrayIterator<Element>(storage)
+    }
+    
+    private mutating func makeSureIsUniquelyReferenced() {
+        if !isKnownUniquelyReferenced(&storage) {
+            storage = storage.makeUniqueCopy()
+        }
     }
 }
 

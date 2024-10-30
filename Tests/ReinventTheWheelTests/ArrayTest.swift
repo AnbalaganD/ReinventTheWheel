@@ -10,7 +10,7 @@ import Testing
 
 @Test
 func ensureAllArrayOperationWork() async throws {
-    let array = UnsafeArray<Int>()
+    var array = UnsafeArray<Int>()
     array.append(1)
     array.append(2)
     array.append(3)
@@ -27,7 +27,7 @@ func ensureAllArrayOperationWork() async throws {
 
 @Test(arguments: [Array<Int>.init(arrayLiteral: 1, 2, 3, 4, 5)])
 func checkCollectionHasSameElement(rawArray: [Int]) async throws {
-    let array = UnsafeArray<Int>()
+    var array = UnsafeArray<Int>()
     rawArray.forEach { array.append($0) }
     
     let result = rawArray == array
@@ -50,7 +50,7 @@ func arrayCount() {
 
 @Test
 func checkCorrectlyRemovedLastElement() {
-    let array = UnsafeArray<Int>(arrayLiteral: 1, 2, 3, 4, 5, 6)
+    var array = UnsafeArray<Int>(arrayLiteral: 1, 2, 3, 4, 5, 6)
     array.remove(at: array.count - 1)
     array.remove(at: array.count - 1)
     
@@ -59,7 +59,7 @@ func checkCorrectlyRemovedLastElement() {
 
 @Test
 func checkCorrectlyRemovedFirstElement() {
-    let array = UnsafeArray<Int>(arrayLiteral: 1, 2, 3, 4, 5, 6)
+    var array = UnsafeArray<Int>(arrayLiteral: 1, 2, 3, 4, 5, 6)
     array.remove(at: 0)
     array.remove(at: 0)
     
@@ -68,7 +68,7 @@ func checkCorrectlyRemovedFirstElement() {
 
 @Test
 func checkRemoveMiddleElement() {
-    let array = UnsafeArray<Int>(arrayLiteral: 1, 2, 3, 4, 5, 6)
+    var array = UnsafeArray<Int>(arrayLiteral: 1, 2, 3, 4, 5, 6)
     array.remove(at: 3)
     array.remove(at: 2)
 
@@ -77,8 +77,19 @@ func checkRemoveMiddleElement() {
 
 @Test
 func checkRemoveAll() {
-    let array = UnsafeArray<Int>(arrayLiteral: 1, 2, 3, 4, 5, 6)
+    var array = UnsafeArray<Int>(arrayLiteral: 1, 2, 3, 4, 5, 6)
     array.removeAll()
 
     #expect([] == array)
+}
+
+@Test
+func checkValueSemantics() async throws {
+    let firstArray: UnsafeArray<Int> = [1, 2, 3, 4, 5, 6]
+    var secondArray = firstArray
+    
+    secondArray.remove(at: 1)
+    #expect(firstArray.count == 6)
+    print(firstArray)
+    print(secondArray)
 }
