@@ -7,7 +7,6 @@
 
 struct UnsafeArray<Element>: Sequence, ExpressibleByArrayLiteral {
     private var storage: ArrayStorage<Element>
-    private var current = 0
     
     init() {
         storage = .init()
@@ -30,6 +29,10 @@ struct UnsafeArray<Element>: Sequence, ExpressibleByArrayLiteral {
         storage.remove(at: index)
     }
     
+    func removeAll(keepingCapacity: Bool = false) {
+        storage.removeAll(keepingCapacity: keepingCapacity)
+    }
+    
     func makeIterator() -> UnsafeArrayIterator<Element> {
         UnsafeArrayIterator<Element>(storage)
     }
@@ -40,10 +43,17 @@ extension UnsafeArray: Collection {
     
     var endIndex: Int { storage.endIndex }
     
-    //TODO: check index is valid before read and write
     subscript(position: Int) -> Element {
-        get { storage.getElement(at: position) }
-        set(newValue) { storage.replace(at: position, value: newValue) }
+        get {
+            precondition(position >= startIndex, "Position must be positive or zero")
+            precondition(position < endIndex, "Index out of bounds")
+            return storage.getElement(at: position)
+        }
+        set(newValue) {
+            precondition(position >= startIndex, "Position must be positive or zero")
+            precondition(position < endIndex, "Index out of bounds")
+            storage.replace(at: position, value: newValue)
+        }
     }
     
     func index(after i: Int) -> Int { storage.index(after: i) }
@@ -57,5 +67,23 @@ extension UnsafeArray: BidirectionalCollection {
 extension UnsafeArray: CustomReflectable {
     var customMirror: Mirror {
         Mirror(reflecting: storage)
+    }
+}
+
+extension UnsafeArray {
+    func withUnsafeBufferPointer(_ body: (UnsafeBufferPointer<Element>) throws -> Void) rethrows {
+        try storage.withUnsafeBufferPointer(body)
+    }
+}
+
+extension UnsafeArray: CustomStringConvertible {
+    var description: String {
+        var result: String = "["
+        for (index, element) in self.enumerated() {
+            if index > 0 { result.append(", ") }
+            result.append("\(element)")
+        }
+        result.append("]")
+        return result
     }
 }

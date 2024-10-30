@@ -47,3 +47,38 @@ func arrayCount() {
     let array = UnsafeArray<Int>(arrayLiteral: 1, 2, 3, 4, 5, 6)
     #expect(array.count == 6)
 }
+
+@Test
+func checkCorrectlyRemovedLastElement() {
+    let array = UnsafeArray<Int>(arrayLiteral: 1, 2, 3, 4, 5, 6)
+    array.remove(at: array.count - 1)
+    array.remove(at: array.count - 1)
+    
+    #expect([1, 2, 3, 4] == array)
+}
+
+@Test
+func checkCorrectlyRemovedFirstElement() {
+    let array = UnsafeArray<Int>(arrayLiteral: 1, 2, 3, 4, 5, 6)
+    array.remove(at: 0)
+    array.remove(at: 0)
+    
+    #expect([3, 4, 5, 6] == array)
+}
+
+@Test
+func checkRemoveMiddleElement() {
+    let array = UnsafeArray<Int>(arrayLiteral: 1, 2, 3, 4, 5, 6)
+    array.remove(at: 3)
+    array.remove(at: 2)
+
+    #expect([1, 2, 5, 6] == array)
+}
+
+@Test
+func checkRemoveAll() {
+    let array = UnsafeArray<Int>(arrayLiteral: 1, 2, 3, 4, 5, 6)
+    array.removeAll()
+
+    #expect([] == array)
+}

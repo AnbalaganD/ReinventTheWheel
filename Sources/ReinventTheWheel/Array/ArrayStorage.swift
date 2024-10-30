@@ -54,7 +54,6 @@ final class ArrayStorage<T> {
         (pointer + index).pointee
     }
     
-    //This function is not yet completed
     func remove(at index: Int) {
         if index >= count {
             fatalError("Array index out of bound exception")
@@ -62,18 +61,15 @@ final class ArrayStorage<T> {
         
         // Remove last element
         if index == count - 1 {
-            (pointer + index).pointee
+            (pointer + index).deinitialize(count: 1)
         } else {
-            //TODO: Remove element at specific path
             var oldIndex = index
             repeat {
                 (pointer + oldIndex).pointee = (pointer + oldIndex + 1).pointee
                 oldIndex += 1
-            } while oldIndex < count - 2
-            (pointer + index).deallocate()
+            } while oldIndex < count
+            (pointer + index).deinitialize(count: 1)
         }
-        
-        var currentIndex = count - 1
         
         count -= 1
     }
@@ -85,8 +81,8 @@ final class ArrayStorage<T> {
             // Assign default capacity
             capacity = 5
             pointer = UnsafeMutablePointer<T>.allocate(capacity: capacity)
-            count = 0
         }
+        count = 0
     }
     
     var startIndex: Int { 0 }
@@ -118,5 +114,11 @@ final class ArrayStorage<T> {
     
     deinit {
         pointer.deallocate()
+    }
+}
+
+extension ArrayStorage {
+    func withUnsafeBufferPointer(_ body: (UnsafeBufferPointer<T>) throws -> Void) rethrows {
+        try body(UnsafeBufferPointer(start: pointer, count: capacity))
     }
 }
