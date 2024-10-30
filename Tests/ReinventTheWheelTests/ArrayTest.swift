@@ -26,7 +26,7 @@ func ensureAllArrayOperationWork() async throws {
 }
 
 @Test(arguments: [Array<Int>.init(arrayLiteral: 1, 2, 3, 4, 5)])
-func checkCollectionHasSameElement(rawArray: [Int]) async throws {
+func collectionHasSameElement(rawArray: [Int]) async throws {
     var array = UnsafeArray<Int>()
     rawArray.forEach { array.append($0) }
     
@@ -35,7 +35,7 @@ func checkCollectionHasSameElement(rawArray: [Int]) async throws {
 }
 
 @Test
-func checkDropLast() {
+func dropLast() {
     let array = UnsafeArray<Int>(arrayLiteral: 1, 2, 3, 4, 5)
     let item = array.dropLast()
     print(item)
@@ -49,7 +49,7 @@ func arrayCount() {
 }
 
 @Test
-func checkCorrectlyRemovedLastElement() {
+func removedLastElement() {
     var array = UnsafeArray<Int>(arrayLiteral: 1, 2, 3, 4, 5, 6)
     array.remove(at: array.count - 1)
     array.remove(at: array.count - 1)
@@ -58,7 +58,7 @@ func checkCorrectlyRemovedLastElement() {
 }
 
 @Test
-func checkCorrectlyRemovedFirstElement() {
+func removedFirstElement() {
     var array = UnsafeArray<Int>(arrayLiteral: 1, 2, 3, 4, 5, 6)
     array.remove(at: 0)
     array.remove(at: 0)
@@ -67,7 +67,7 @@ func checkCorrectlyRemovedFirstElement() {
 }
 
 @Test
-func checkRemoveMiddleElement() {
+func removeMiddleElement() {
     var array = UnsafeArray<Int>(arrayLiteral: 1, 2, 3, 4, 5, 6)
     array.remove(at: 3)
     array.remove(at: 2)
@@ -76,7 +76,7 @@ func checkRemoveMiddleElement() {
 }
 
 @Test
-func checkRemoveAll() {
+func removeAll() {
     var array = UnsafeArray<Int>(arrayLiteral: 1, 2, 3, 4, 5, 6)
     array.removeAll()
 
@@ -84,7 +84,7 @@ func checkRemoveAll() {
 }
 
 @Test
-func checkValueSemantics() async throws {
+func valueSemantics() async throws {
     let firstArray: UnsafeArray<Int> = [1, 2, 3, 4, 5, 6]
     var secondArray = firstArray
     
@@ -95,21 +95,21 @@ func checkValueSemantics() async throws {
 }
 
 @Test
-func checkInsertFirst() async throws {
+func insertFirst() async throws {
     var array: UnsafeArray<Int> = [1, 2, 3, 4, 5]
     array.insert(at: 0, value: 6)
     #expect(array == [6, 1, 2, 3, 4, 5])
 }
 
 @Test
-func checkInsertLast() async throws {
+func insertLast() async throws {
     var array: UnsafeArray<Int> = [1, 2, 3, 4, 5]
     array.insert(at: array.count, value: 6)
     #expect(array == [1, 2, 3, 4, 5, 6])
 }
 
 @Test
-func checkInsertMiddle() async throws {
+func insertMiddle() async throws {
     var array: UnsafeArray<Int> = [1, 2, 3, 4, 5]
     array.insert(at: 3, value: 6)
     #expect(array == [1, 2, 3, 6, 4, 5])
