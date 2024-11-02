@@ -8,6 +8,9 @@
 struct UnsafeArray<Element>: Sequence, ExpressibleByArrayLiteral {
     private var storage: ArrayStorage<Element>
     
+    @inlinable
+    public var capacity: Int { storage.capacity }
+    
     init() {
         storage = .init()
     }
@@ -50,47 +53,23 @@ extension UnsafeArray: Collection {
     func index(after i: Int) -> Int { storage.index(after: i) }
 }
 
-extension UnsafeArray: RangeReplaceableCollection {
-    mutating func append(_ newElement: Element) {
-        makeSureIsUniquelyReferenced()
-        storage.append(newElement)
-    }
-    
-    mutating func append<S>(contentsOf newElements: S) where S : Sequence, Element == S.Element {
-        fatalError("Not Yet implemented")
-    }
-    
+extension UnsafeArray: RangeReplaceableCollection {    
     mutating func replaceSubrange<C: Collection>(
         _ subrange: Range<Int>,
         with newElements: C
     ) where C.Element == Element {
-        fatalError("Not yet implemented")
-    }
-    
-    mutating func insert(_ newElement: Element, at i: Int) {
-        precondition(i >= startIndex, "Position must be positive or zero")
-        precondition(i < endIndex + 1, "Index out of bounds")
+        precondition(subrange.lowerBound >= startIndex, "Range must be positive or zero")
+        precondition(subrange.upperBound <= endIndex, "Range out of bounds")
         makeSureIsUniquelyReferenced()
-        storage.insert(at: i, value: newElement)
-    }
-    
-    @discardableResult
-    mutating func remove(at i: Int) -> Element {
-        precondition(i >= startIndex, "Position must be positive or zero")
-        precondition(i < endIndex, "Index out of bounds")
-        makeSureIsUniquelyReferenced()
-        return storage.remove(at: i)
-    }
-    
-    mutating func removeAll(keepingCapacity keepCapacity: Bool) {
-        makeSureIsUniquelyReferenced()
-        storage.removeAll(keepingCapacity: keepCapacity)
+        storage.replaceSubrange(subrange, with: newElements)
     }
 }
 
 extension UnsafeArray: BidirectionalCollection {
     func index(before i: Int) -> Int { storage.index(before: i) }
 }
+
+extension UnsafeArray: MutableCollection { }
 
 //TODO: Incomplete
 extension UnsafeArray: CustomReflectable {

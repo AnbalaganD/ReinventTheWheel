@@ -5,6 +5,8 @@
 //  Created by Anbalagan on 04/10/24.
 //
 
+/// In this class, we do not explicitly verify preconditions.
+/// We rely on the UnsafeArray type to guarantee that index-range and other essential preconditions are met.
 final class ArrayStorage<T> {
     private var pointer: UnsafeMutablePointer<T>
     private(set) var capacity = 5
@@ -49,11 +51,21 @@ final class ArrayStorage<T> {
         count += 1
     }
     
-    func replace(at index: Int, value: T) {
-        if index >= count {
-            fatalError("Array index out of bound exception")
+    func insert<C: Collection>(at index: Int, collection: C) where C.Element == T {        
+        if index == count {
+            for element in collection {
+                append(element)
+            }
+        } else {
+            var insertIndex = index
+            for element in collection {
+                insert(at: insertIndex, value: element)
+                insertIndex += 1
+            }
         }
-        
+    }
+    
+    func replace(at index: Int, value: T) {
         (pointer + index).initialize(to: value)
     }
     
@@ -61,11 +73,8 @@ final class ArrayStorage<T> {
         (pointer + index).pointee
     }
     
+    @discardableResult
     func remove(at index: Int) -> T {
-        if index >= count {
-            fatalError("Array index out of bound exception")
-        }
-        
         let removedElement = (pointer + index).pointee
         // Remove last element
         if index == count - 1 {
@@ -76,11 +85,29 @@ final class ArrayStorage<T> {
                 (pointer + oldIndex).pointee = (pointer + oldIndex + 1).pointee
                 oldIndex += 1
             } while oldIndex < count
-            (pointer + index).deinitialize(count: 1)
+            (pointer + (count - 1)).deinitialize(count: 1)
         }
         
         count -= 1
         return removedElement
+    }
+    
+    func remove(_ range: Range<Int>) {
+        let length = range.upperBound - range.lowerBound
+        if length == 0 { return }
+        
+        if range.upperBound == count {
+            (pointer + range.lowerBound).deinitialize(count: length)
+        } else {
+            var oldIndex = range.lowerBound
+            repeat {
+                (pointer + oldIndex).pointee = (pointer + oldIndex + length).pointee
+                oldIndex += 1
+            } while oldIndex < (count - length)
+            (pointer + (count - length)).deinitialize(count: length)
+        }
+        
+        count -= length
     }
     
     func removeAll(keepingCapacity: Bool = false) {
@@ -98,18 +125,22 @@ final class ArrayStorage<T> {
     
     var endIndex: Int { count }
     
-    func index(before i: Int) -> Int {
-        if i >= endIndex { fatalError("After index out of bound exception") }
-        return i - 1
-    }
+    func index(before i: Int) -> Int { i - 1 }
     
-    func index(after i: Int) -> Int {
-        if i >= endIndex { fatalError("After index out of bound exception") }
-        return i + 1
-    }
+    func index(after i: Int) -> Int { i + 1 }
     
-    private func arrange() {
-        
+    func replaceSubrange<C: Collection>(
+        _ subrange: Range<Int>,
+        with newElements: C
+    ) where C.Element == T {
+        if newElements is EmptyCollection<T> {
+            remove(subrange)
+        } else if subrange.lowerBound == subrange.upperBound {
+            insert(at: subrange.lowerBound, collection: newElements)
+        } else {
+            remove(subrange)
+            insert(at: subrange.lowerBound, collection: newElements)
+        }
     }
     
     private func reallocate(_ pointer: UnsafeMutablePointer<T>) -> UnsafeMutablePointer<T> {
@@ -117,7 +148,7 @@ final class ArrayStorage<T> {
 
         capacity *= 2
         let newPointer = UnsafeMutablePointer<T>.allocate(capacity: capacity)
-        newPointer.update(from: pointer, count: count)
+        newPointer.initialize(from: pointer, count: count)
         return newPointer
     }
     

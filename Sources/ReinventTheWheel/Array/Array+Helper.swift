@@ -23,3 +23,28 @@ extension UnsafeArray where Element: Equatable {
         return zip(rhs, lhs).allSatisfy { $0 == $1 }
     }
 }
+
+func == <T: Equatable>(lhs: Slice<UnsafeArray<T>>, rhs: Slice<UnsafeArray<T>>) -> Bool {
+    if lhs.count != rhs.count { return false }
+    return zip(rhs, lhs).allSatisfy { $0 == $1 }
+}
+
+func == <T: Equatable>(lhs: Slice<UnsafeArray<T>>, rhs: UnsafeArray<T>) -> Bool {
+    if lhs.count != rhs.count { return false }
+    return zip(rhs, lhs).allSatisfy { $0 == $1 }
+}
+
+func == <T: Equatable>(lhs: UnsafeArray<T>, rhs: Slice<UnsafeArray<T>>) -> Bool {
+    if lhs.count != rhs.count { return false }
+    return zip(rhs, lhs).allSatisfy { $0 == $1 }
+}
+
+func == <T: Equatable>(lhs: Slice<UnsafeArray<T>>, rhs: Array<T>) -> Bool {
+    if lhs.count != rhs.count { return false }
+    return zip(rhs, lhs).allSatisfy { $0 == $1 }
+}
+
+func == <T: Equatable>(lhs: Array<T>, rhs: Slice<UnsafeArray<T>>) -> Bool {
+    if lhs.count != rhs.count { return false }
+    return zip(rhs, lhs).allSatisfy { $0 == $1 }
+}
