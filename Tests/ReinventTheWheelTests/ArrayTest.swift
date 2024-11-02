@@ -97,20 +97,40 @@ func valueSemantics() async throws {
 @Test
 func insertFirst() async throws {
     var array: UnsafeArray<Int> = [1, 2, 3, 4, 5]
-    array.insert(at: 0, value: 6)
+    array.insert(6, at: 0)
     #expect(array == [6, 1, 2, 3, 4, 5])
 }
 
 @Test
 func insertLast() async throws {
     var array: UnsafeArray<Int> = [1, 2, 3, 4, 5]
-    array.insert(at: array.count, value: 6)
+    array.insert(6, at: array.count)
     #expect(array == [1, 2, 3, 4, 5, 6])
 }
 
 @Test
 func insertMiddle() async throws {
     var array: UnsafeArray<Int> = [1, 2, 3, 4, 5]
-    array.insert(at: 3, value: 6)
+    array.insert(6, at: 3)
     #expect(array == [1, 2, 3, 6, 4, 5])
+}
+
+@Test
+func verifyArraySlice() async throws {
+    var array: UnsafeArray<Int> = [1, 2, 3, 4, 5]
+    var subArray = array[1 ..< 4]
+    subArray.removeFirst()
+    array.insert(6, at: 0)
+    print(array)
+    print(subArray)
+}
+
+@Test
+func verifyArraySliceInFoundationArray() async throws {
+    var array: [Int] = [1, 2, 3, 4, 5]
+    var subArray = array[1 ..< 4]
+    subArray.removeFirst()
+    array.insert(6, at: 0)
+    print(array)
+    print(subArray)
 }

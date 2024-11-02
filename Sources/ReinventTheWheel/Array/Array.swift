@@ -17,30 +17,6 @@ struct UnsafeArray<Element>: Sequence, ExpressibleByArrayLiteral {
         elements.forEach(storage.append)
     }
     
-    mutating func append(_ element: Element) {
-        makeSureIsUniquelyReferenced()
-        storage.append(element)
-    }
-    
-    mutating func insert(at index: Int, value: Element) {
-        precondition(index >= startIndex, "Position must be positive or zero")
-        precondition(index < endIndex + 1, "Index out of bounds")
-        makeSureIsUniquelyReferenced()
-        storage.insert(at: index, value: value)
-    }
-    
-    mutating func remove(at index: Int) {
-        precondition(index >= startIndex, "Position must be positive or zero")
-        precondition(index < endIndex, "Index out of bounds")
-        makeSureIsUniquelyReferenced()
-        storage.remove(at: index)
-    }
-    
-    mutating func removeAll(keepingCapacity: Bool = false) {
-        makeSureIsUniquelyReferenced()
-        storage.removeAll(keepingCapacity: keepingCapacity)
-    }
-    
     func makeIterator() -> UnsafeArrayIterator<Element> {
         UnsafeArrayIterator<Element>(storage)
     }
@@ -66,11 +42,50 @@ extension UnsafeArray: Collection {
         set(newValue) {
             precondition(position >= startIndex, "Position must be positive or zero")
             precondition(position < endIndex, "Index out of bounds")
+            makeSureIsUniquelyReferenced()
             storage.replace(at: position, value: newValue)
         }
     }
     
     func index(after i: Int) -> Int { storage.index(after: i) }
+}
+
+extension UnsafeArray: RangeReplaceableCollection {
+    mutating func append(_ newElement: Element) {
+        makeSureIsUniquelyReferenced()
+        storage.append(newElement)
+    }
+    
+    mutating func append<S>(contentsOf newElements: S) where S : Sequence, Element == S.Element {
+        fatalError("Not Yet implemented")
+    }
+    
+    mutating func replaceSubrange<C: Collection>(
+        _ subrange: Range<Int>,
+        with newElements: C
+    ) where C.Element == Element {
+        fatalError("Not yet implemented")
+    }
+    
+    mutating func insert(_ newElement: Element, at i: Int) {
+        precondition(i >= startIndex, "Position must be positive or zero")
+        precondition(i < endIndex + 1, "Index out of bounds")
+        makeSureIsUniquelyReferenced()
+        storage.insert(at: i, value: newElement)
+    }
+    
+    @discardableResult
+    mutating func remove(at i: Int) -> Element {
+        precondition(i >= startIndex, "Position must be positive or zero")
+        precondition(i < endIndex, "Index out of bounds")
+        makeSureIsUniquelyReferenced()
+        return storage.remove(at: i)
+    }
+    
+    mutating func removeAll(keepingCapacity keepCapacity: Bool) {
+        makeSureIsUniquelyReferenced()
+        storage.removeAll(keepingCapacity: keepCapacity)
+    }
 }
 
 extension UnsafeArray: BidirectionalCollection {

@@ -61,11 +61,12 @@ final class ArrayStorage<T> {
         (pointer + index).pointee
     }
     
-    func remove(at index: Int) {
+    func remove(at index: Int) -> T {
         if index >= count {
             fatalError("Array index out of bound exception")
         }
         
+        let removedElement = (pointer + index).pointee
         // Remove last element
         if index == count - 1 {
             (pointer + index).deinitialize(count: 1)
@@ -79,6 +80,7 @@ final class ArrayStorage<T> {
         }
         
         count -= 1
+        return removedElement
     }
     
     func removeAll(keepingCapacity: Bool = false) {
