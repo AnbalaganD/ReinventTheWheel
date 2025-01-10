@@ -223,7 +223,15 @@ struct ArrayTest {
         array.append(Person(name: "Kotlin", age: 24))
         array.append(Person(name: "Java", age: 25))
         array.append(Person(name: "Rust", age: 26))
-        print(array)
+        
+        #expect(array.count == 7)
+        #expect(array[0].name == "Anbu")
+        #expect(array[1].name == "Anbalagan D")
+        #expect(array[2].name == "Swift")
+        #expect(array[3].name == "Tamil")
+        #expect(array[4].name == "Kotlin")
+        #expect(array[5].name == "Java")
+        #expect(array[6].name == "Rust")
     }
     
     @Test
@@ -244,10 +252,12 @@ struct ArrayTest {
     
     @Test func checkDeallocation() async throws {
         var array: UnsafeArray<Person> = []
-        array.append(Person(name: "Anbu", age: 20))
-        array.append(Person(name: "Anbalagan D", age: 21))
-        array.append(Person(name: "Swift", age: 22))
+        var deinitCount = 0
+        array.append(Person(name: "Anbu", age: 20) { deinitCount += 1 })
+        array.append(Person(name: "Anbalagan D", age: 21) { deinitCount += 1 })
+        array.append(Person(name: "Swift", age: 22) { deinitCount += 1 })
         
         array.remove(at: array.count - 1)
+        #expect(deinitCount == 1)
     }
 }

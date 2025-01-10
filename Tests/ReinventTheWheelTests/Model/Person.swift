@@ -10,9 +10,12 @@ class Person: CustomStringConvertible {
     let name: String
     let age: Int
     
-    init(name: String, age: Int) {
+    private var deinitHandler: () -> Void
+    
+    init(name: String, age: Int, deinitHandler: @escaping () -> Void = {}) {
         self.name = name
         self.age = age
+        self.deinitHandler = deinitHandler
     }
     
     var description: String {
@@ -20,6 +23,6 @@ class Person: CustomStringConvertible {
     }
     
     deinit {
-        print("Person deinit called")
+        deinitHandler()
     }
 }
