@@ -225,18 +225,29 @@ struct ArrayTest {
         array.append(Person(name: "Rust", age: 26))
         print(array)
     }
-}
-
-class Person: CustomStringConvertible {
-    let name: String
-    let age: Int
     
-    init(name: String, age: Int) {
-        self.name = name
-        self.age = age
+    @Test
+    func checkLazyIteration() async throws {
+        let array: UnsafeArray<Int> = [1, 2, 3, 4, 5]
+        var totalMapClouserExecute = 0
+        let lazyArray = array.lazy.map {
+            totalMapClouserExecute += 1
+            return $0 + 10
+        }
+        
+        for i in 0 ..< lazyArray.count - 3 {
+            _ = lazyArray[i]
+        }
+        
+        #expect(totalMapClouserExecute == 2)
     }
     
-    var description: String {
-        "Person(name: \(name), age: \(age))"
+    @Test func checkDeallocation() async throws {
+        var array: UnsafeArray<Person> = []
+        array.append(Person(name: "Anbu", age: 20))
+        array.append(Person(name: "Anbalagan D", age: 21))
+        array.append(Person(name: "Swift", age: 22))
+        
+        array.remove(at: array.count - 1)
     }
 }
