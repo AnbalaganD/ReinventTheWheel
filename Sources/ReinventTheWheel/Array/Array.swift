@@ -80,7 +80,7 @@ extension UnsafeArray: CustomReflectable {
 
 extension UnsafeArray {
     func withUnsafeBufferPointer(_ body: (UnsafeBufferPointer<Element>) throws -> Void) rethrows {
-        try storage.withUnsafeBufferPointer(body)
+        try unsafe storage.withUnsafeBufferPointer(body)
     }
 }
 

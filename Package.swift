@@ -1,4 +1,4 @@
-// swift-tools-version: 6.0
+// swift-tools-version: 6.2
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -10,16 +10,20 @@ let package = Package(
         .library(
             name: "ReinventTheWheel",
             targets: ["ReinventTheWheel"]
-        ),
+        )
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "ReinventTheWheel"),
+            name: "ReinventTheWheel",
+            swiftSettings: [
+                .strictMemorySafety()
+            ]
+        ),
         .testTarget(
             name: "ReinventTheWheelTests",
             dependencies: ["ReinventTheWheel"]
-        ),
+        )
     ]
 )

@@ -7,34 +7,34 @@
 
 /// In this class, we do not explicitly verify preconditions.
 /// We rely on the UnsafeArray type to guarantee that index-range and other essential preconditions are met.
-final class ArrayStorage<T> {
+@safe final class ArrayStorage<T> {
     private var pointer: UnsafeMutablePointer<T>
     private(set) var capacity = 5
     private(set) var count = 0
     
     init() {
-        pointer = UnsafeMutablePointer<T>.allocate(capacity: capacity)
+        unsafe pointer = UnsafeMutablePointer<T>.allocate(capacity: capacity)
     }
     
     private init(storage: ArrayStorage<T>) {
         capacity = storage.capacity
         count = storage.count
-        pointer = UnsafeMutablePointer<T>.allocate(capacity: storage.capacity)
-        pointer.initialize(from: storage.pointer, count: storage.count)
+        unsafe pointer = UnsafeMutablePointer<T>.allocate(capacity: storage.capacity)
+        unsafe pointer.initialize(from: storage.pointer, count: storage.count)
     }
     
     func append(_ element: T) {
         if count == capacity {
-            pointer = reallocate(pointer)
+            unsafe pointer = reallocate(pointer)
         }
         
-        (pointer + count).initialize(to: element)
+        unsafe (pointer + count).initialize(to: element)
         count += 1
     }
     
     func insert(at index: Int, value: T) {
         if count == capacity {
-            pointer = reallocate(pointer)
+            unsafe pointer = unsafe reallocate(pointer)
         }
         
         if index == count {
@@ -43,11 +43,11 @@ final class ArrayStorage<T> {
         
         var currentIndex = count - 1
         repeat {
-            (pointer + currentIndex + 1).initialize(to: getElement(at: currentIndex))
+            unsafe (pointer + currentIndex + 1).initialize(to: getElement(at: currentIndex))
             currentIndex -= 1
         } while currentIndex >= index
         
-        (pointer + index).initialize(to: value)
+        unsafe (pointer + index).initialize(to: value)
         count += 1
     }
     
@@ -66,26 +66,26 @@ final class ArrayStorage<T> {
     }
     
     func replace(at index: Int, value: T) {
-        (pointer + index).initialize(to: value)
+        unsafe (pointer + index).initialize(to: value)
     }
     
     func getElement(at index: Int) -> T {
-        (pointer + index).pointee
+        unsafe (pointer + index).pointee
     }
     
     @discardableResult
     func remove(at index: Int) -> T {
-        let removedElement = (pointer + index).pointee
+        let removedElement = unsafe (pointer + index).pointee
         // Remove last element
         if index == count - 1 {
-            (pointer + index).deinitialize(count: 1)
+            unsafe (pointer + index).deinitialize(count: 1)
         } else {
             var oldIndex = index
             repeat {
-                (pointer + oldIndex).pointee = (pointer + oldIndex + 1).pointee
+                unsafe (pointer + oldIndex).pointee = (pointer + oldIndex + 1).pointee
                 oldIndex += 1
             } while oldIndex < count
-            (pointer + (count - 1)).deinitialize(count: 1)
+            unsafe (pointer + (count - 1)).deinitialize(count: 1)
         }
         
         count -= 1
@@ -97,14 +97,14 @@ final class ArrayStorage<T> {
         if length == 0 { return }
         
         if range.upperBound == count {
-            (pointer + range.lowerBound).deinitialize(count: length)
+            unsafe (pointer + range.lowerBound).deinitialize(count: length)
         } else {
             var oldIndex = range.lowerBound
             repeat {
-                (pointer + oldIndex).pointee = (pointer + oldIndex + length).pointee
+                unsafe (pointer + oldIndex).pointee = (pointer + oldIndex + length).pointee
                 oldIndex += 1
             } while oldIndex < (count - length)
-            (pointer + (count - length)).deinitialize(count: length)
+            unsafe (pointer + (count - length)).deinitialize(count: length)
         }
         
         count -= length
@@ -112,11 +112,11 @@ final class ArrayStorage<T> {
     
     func removeAll(keepingCapacity: Bool = false) {
         if keepingCapacity {
-            pointer.deinitialize(count: count)
+            unsafe pointer.deinitialize(count: count)
         } else {
             // Assign default capacity
             capacity = 5
-            pointer = UnsafeMutablePointer<T>.allocate(capacity: capacity)
+            unsafe pointer = UnsafeMutablePointer<T>.allocate(capacity: capacity)
         }
         count = 0
     }
@@ -144,22 +144,22 @@ final class ArrayStorage<T> {
     }
     
     private func reallocate(_ pointer: UnsafeMutablePointer<T>) -> UnsafeMutablePointer<T> {
-        defer { pointer.deallocate() }
+        defer { unsafe pointer.deallocate() }
 
         capacity *= 2
         let newPointer = UnsafeMutablePointer<T>.allocate(capacity: capacity)
-        newPointer.initialize(from: pointer, count: count)
-        return newPointer
+        unsafe newPointer.initialize(from: pointer, count: count)
+        return unsafe newPointer
     }
     
     deinit {
-        pointer.deallocate()
+        unsafe pointer.deallocate()
     }
 }
 
 extension ArrayStorage {
     func withUnsafeBufferPointer(_ body: (UnsafeBufferPointer<T>) throws -> Void) rethrows {
-        try body(UnsafeBufferPointer(start: pointer, count: capacity))
+        try unsafe body(UnsafeBufferPointer(start: pointer, count: capacity))
     }
 }
 
